@@ -11,6 +11,9 @@
 #include "data.cpp"
 #include "shapes.cpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 int WINDOW_HEIGHT;
 int WINDOW_WIDTH;
 
