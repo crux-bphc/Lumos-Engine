@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "data.cpp"
+#include "shader.cpp"
 #include "shapes.cpp"
+// #include "text.cpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -34,6 +36,26 @@ class App {
     bool resizable;
     bool headless = false;
 
+    void init_glfw() {
+        spdlog::debug("Initializing GLFW");
+
+        // Initialize GLFW
+        if (!glfwInit()) {
+            spdlog::error("Failed to initialize GLFW");
+        }
+    }
+
+    void init_glew() {
+        spdlog::debug("Initializing GLEW");
+
+        // Initialize GLEW (or other OpenGL loader) after creating the context
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (err != GLEW_OK) {
+            spdlog::error("GLEW error: {}", glewGetErrorString(err));
+        }
+    }
+
     void create_window() {
         if (this->headless) {
             spdlog::debug("Creating headless window");
@@ -41,13 +63,9 @@ class App {
             return;
         }
 
+        this->init_glfw();
+
         spdlog::debug("Creating window");
-
-        // Initialize GLFW
-        if (!glfwInit()) {
-            spdlog::error("Failed to initialize GLFW");
-        }
-
         GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, this->window_title, nullptr, nullptr);
         this->window = window;
         glfwSetWindowAttrib(window, GLFW_RESIZABLE, this->resizable);
@@ -59,13 +77,13 @@ class App {
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
 
-        // Initialize GLEW (or other OpenGL loader) after creating the context
-        glewExperimental = GL_TRUE;
-        GLenum err = glewInit();
-        if (err != GLEW_OK) {
-            fprintf(stderr, "GLEW error: %s\n", glewGetErrorString(err));
-            glfwTerminate();
-            // Handle GLEW initialization failure
+        this->init_glew();
+
+        const GLubyte* glVersion = glGetString(GL_VERSION);
+        if (glVersion) {
+            spdlog::info("Using OpenGL version: {}", glVersion);
+        } else {
+            spdlog::error("Failed to retrieve OpenGL version");
         }
     }
 

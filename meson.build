@@ -8,5 +8,6 @@ openGLDep = dependency('gl')
 glewDep = dependency('glew')
 glfwDep = dependency('glfw3')
 spdlogDep = dependency('spdlog')
+freetypeDep = dependency('freetype2')
 
-executable('debug', 'Examples/scratch.cpp', dependencies: [glfwDep, glewDep, openGLDep, spdlogDep])
+executable('debug', 'Examples/primitive.cpp', dependencies: [glfwDep, glewDep, openGLDep, spdlogDep, freetypeDep])

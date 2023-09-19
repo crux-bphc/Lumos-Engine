@@ -12,6 +12,9 @@ enum PointType {
 };
 
 class Shape {
+   protected:
+    GLuint shader_program_id;
+
    public:
     glm::vec2 position;
     glm::vec3 color;
@@ -27,6 +30,10 @@ class Shape {
     }
 
     virtual ~Shape() {}
+
+    void set_shader_program(Shader shader) {
+        shader_program_id = shader.get_id();
+    }
 };
 
 // We are assuming the vector point are given in such a fashion such that
