@@ -8,5 +8,7 @@ openGLDep = dependency('gl')
 glewDep = dependency('glew')
 glfwDep = dependency('glfw3')
 spdlogDep = dependency('spdlog')
+incdir = include_directories('include')
+extdir = include_directories('external')
 
-executable('debug', 'Examples/moving_rect.cpp', dependencies: [glfwDep, glewDep, openGLDep, spdlogDep])
+executable('debug', ['examples/checkerboard.cpp', 'src/lumos.cpp', 'src/shapes.cpp'], dependencies: [glfwDep, glewDep, openGLDep, spdlogDep], include_directories : [incdir, extdir])
