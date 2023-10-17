@@ -1,4 +1,4 @@
-#include "../Lumos/lumos.cpp"
+#include "lumos.h"
 
 class Box : public Quad {
    public:

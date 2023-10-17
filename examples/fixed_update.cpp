@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../Lumos/lumos.cpp"
+#include "lumos.h"
 
 void hello_world() {
     spdlog::debug("Hello World");
@@ -12,7 +12,7 @@ void bye_world() {
 
 int main() {
     App app = App();
-    app.add_fixed_update(hello_world, 1)
-        .add_fixed_update(bye_world, 2)
+    app.add_system(SystemType::FixedUpdate, hello_world, 1)
+        .add_system(SystemType::FixedUpdate, bye_world, 2)
         .run();
 }

@@ -21,8 +21,8 @@ private:
     GLFWwindow* window;
     std::vector<std::function<void()>> startup_functions;
     std::vector<std::function<void()>> update_functions;
-    //std::vector<std::pair<std::function<void()>, int>> fixed_update_functions;
-    //std::vector<std::thread> fixed_update_threads;
+    std::vector<std::pair<std::function<void()>, int>> fixed_update_functions;
+    static std::vector<std::thread> fixed_update_threads;
     bool resizable;
     bool headless = false;
     void create_window();
@@ -31,5 +31,6 @@ public:
     App(bool debug = true);
     ~App();
     App& add_system(SystemType type, std::function<void()> function);
+    App& add_system(SystemType type, std::function<void()> function, int seconds);
     void run();
 };

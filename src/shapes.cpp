@@ -113,156 +113,142 @@ void Point::draw() {
     glFlush();
 }
 
-class Circle : public Shape {
-   public:
-    float radius;
-    bool shaded;
-
-    Circle(const glm::vec2& position, const glm::vec3& color = {1.0, 1.0, 1.0}, float radius = 1.0f, bool shaded = true, PointType point_type = PointType::Fraction)
-        : Shape(position, color), radius(radius), shaded(shaded) {
-        switch (point_type) {
-            case PointType::Pixel: {
-                this->position.x = (this->position.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
-                this->position.y = (this->position.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
-                break;
-            }
-            default:
-                break;
+    
+Circle::Circle(const glm::vec2& position, const glm::vec3& color, float radius, bool shaded, PointType point_type)
+    : Shape(position, color), radius(radius), shaded(shaded) {
+    switch (point_type) {
+        case PointType::Pixel: {
+            this->position.x = (this->position.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
+            this->position.y = (this->position.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
+            break;
         }
+        default:
+            break;
+    }
+}
+
+Circle::Circle(const std::vector<float>& coordinates, const std::vector<float>& color, float radius, bool shaded, PointType point_type)
+    : Shape({coordinates[0], coordinates[1]}, {color[0], color[1], color[2]}), radius(radius), shaded(shaded) {
+    switch (point_type) {
+        case PointType::Pixel: {
+            this->position.x = (coordinates[0] / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
+            this->position.y = (coordinates[1] / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void Circle::draw() {
+    if (!is_visible) {
+        return;
     }
 
-    Circle(const std::vector<float>& coordinates, const std::vector<float>& color, float radius = 1.0f, bool shaded = true, PointType point_type = PointType::Fraction)
-        : Shape({coordinates[0], coordinates[1]}, {color[0], color[1], color[2]}), radius(radius), shaded(shaded) {
-        switch (point_type) {
-            case PointType::Pixel: {
-                this->position.x = (coordinates[0] / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
-                this->position.y = (coordinates[1] / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
-                break;
-            }
-            default:
-                break;
-        }
-    }
+    int numSegments = 100;  // Adjust the number of segments for smoother or coarser circles
+    if (this->shaded) {
+        glBegin(GL_TRIANGLE_FAN);  // Use GL_TRIANGLE_FAN to draw a filled circle
 
-    void draw() override {
-        if (!is_visible) {
-            return;
-        }
-
-        int numSegments = 100;  // Adjust the number of segments for smoother or coarser circles
-        if (this->shaded) {
-            glBegin(GL_TRIANGLE_FAN);  // Use GL_TRIANGLE_FAN to draw a filled circle
-
-            glColor3f(color.r, color.g, color.b);
-
-            // Center of the circle
-            glVertex2f(this->position.x, this->position.y);
-
-            for (int i = 0; i <= numSegments; i++) {
-                float theta = 2.0f * M_PI * static_cast<float>(i) / static_cast<float>(numSegments);
-                float x = radius * cos(theta) / static_cast<float>(WINDOW_WIDTH) * 10.0f;
-                // float x = (radius * cos(theta) / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
-                float y = radius * sin(theta) / static_cast<float>(WINDOW_HEIGHT) * 10.0f;
-                // float y = (radius * sin(theta) / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
-
-                glVertex2f(this->position.x + x, this->position.y + y);
-            }
-
-            glEnd();
-            glFlush();
-        } else {
-            glBegin(GL_LINE_LOOP);  // Use GL_LINE_LOOP to draw the circle as an outline
-
-            glColor3f(color.r, color.g, color.b);
-
-            float corrected_radius = (2.0f * this->radius) / static_cast<float>(WINDOW_WIDTH);
-
-            for (int i = 0; i < numSegments; i++) {
-                float theta = 2.0f * M_PI * static_cast<float>(i) / static_cast<float>(numSegments);
-                float x = corrected_radius * cos(theta);
-                float y = corrected_radius * sin(theta);
-
-                glVertex2f(position.x + x, position.y + y);
-            }
-
-            glEnd();
-            glFlush();
-        }
-    }
-};
-
-class Line2D : public Shape {
-   public:
-    std::vector<glm::vec2> points;
-
-    Line2D(std::vector<glm::vec2>& points, const glm::vec3& color = {1.0, 1.0, 1.0}, PointType point_type = PointType::Fraction)
-        : Shape(glm::vec2{0.0f, 0.0f}, color), points(points) {
-        switch (point_type) {
-            case PointType::Pixel: {
-                for (glm::vec2& point : points) {
-                    point.x = (point.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
-                    point.y = (point.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
-                }
-                break;
-            }
-            default:
-                break;
-        }
-    }
-
-    void draw() override {
-        if (!is_visible || points.size() < 2) {
-            return;
-        }
-
-        glBegin(GL_LINES);
         glColor3f(color.r, color.g, color.b);
 
-        for (size_t i = 0; i < points.size() - 1; ++i) {
-            glVertex2f(points[i].x, points[i].y);
-            glVertex2f(points[i + 1].x, points[i + 1].y);
+        // Center of the circle
+        glVertex2f(this->position.x, this->position.y);
+
+        for (int i = 0; i <= numSegments; i++) {
+            float theta = 2.0f * M_PI * static_cast<float>(i) / static_cast<float>(numSegments);
+            float x = radius * cos(theta) / static_cast<float>(WINDOW_WIDTH) * 10.0f;
+            // float x = (radius * cos(theta) / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
+            float y = radius * sin(theta) / static_cast<float>(WINDOW_HEIGHT) * 10.0f;
+            // float y = (radius * sin(theta) / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
+
+            glVertex2f(this->position.x + x, this->position.y + y);
+        }
+
+        glEnd();
+        glFlush();
+    } else {
+        glBegin(GL_LINE_LOOP);  // Use GL_LINE_LOOP to draw the circle as an outline
+
+        glColor3f(color.r, color.g, color.b);
+
+        float corrected_radius = (2.0f * this->radius) / static_cast<float>(WINDOW_WIDTH);
+
+        for (int i = 0; i < numSegments; i++) {
+            float theta = 2.0f * M_PI * static_cast<float>(i) / static_cast<float>(numSegments);
+            float x = corrected_radius * cos(theta);
+            float y = corrected_radius * sin(theta);
+
+            glVertex2f(position.x + x, position.y + y);
         }
 
         glEnd();
         glFlush();
     }
-};
+}
 
-class Triangle : public Shape {
-   public:
-    glm::vec2 p1, p2, p3;
-
-    Triangle(const glm::vec2& point1, const glm::vec2& point2, const glm::vec2& point3, const glm::vec3& color = {1.0, 1.0, 1.0}, PointType point_type = PointType::Fraction)
-        : Shape(glm::vec2{0.0f, 0.0f}, color) {
-        p1 = point1;
-        p2 = point2;
-        p3 = point3;
-
-        if (point_type == PointType::Pixel) {
-            p1.x = (p1.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
-            p1.y = (p1.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
-
-            p2.x = (p2.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
-            p2.y = (p2.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
-
-            p3.x = (p3.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
-            p3.y = (p3.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
+Line2D::Line2D(std::vector<glm::vec2>& points, const glm::vec3& color, PointType point_type)
+    : Shape(glm::vec2{0.0f, 0.0f}, color), points(points) {
+    switch (point_type) {
+        case PointType::Pixel: {
+            for (glm::vec2& point : points) {
+                point.x = (point.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
+                point.y = (point.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
+            }
+            break;
         }
+        default:
+            break;
+    }
+}
+
+void Line2D::draw() {
+    if (!is_visible || points.size() < 2) {
+        return;
     }
 
-    void draw() override {
-        if (!is_visible) {
-            return;
-        }
+    glBegin(GL_LINES);
+    glColor3f(color.r, color.g, color.b);
 
-        glBegin(GL_TRIANGLES);
-        glColor3f(color.r, color.g, color.b);
-
-        glVertex2f(p1.x, p1.y);
-        glVertex2f(p2.x, p2.y);
-        glVertex2f(p3.x, p3.y);
-
-        glEnd();
-        glFlush();
+    for (size_t i = 0; i < points.size() - 1; ++i) {
+        glVertex2f(points[i].x, points[i].y);
+        glVertex2f(points[i + 1].x, points[i + 1].y);
     }
-};
+
+    glEnd();
+    glFlush();
+}
+
+
+Triangle::Triangle(const glm::vec2& point1, const glm::vec2& point2, const glm::vec2& point3, const glm::vec3& color, PointType point_type)
+    : Shape(glm::vec2{0.0f, 0.0f}, color) {
+    p1 = point1;
+    p2 = point2;
+    p3 = point3;
+
+    if (point_type == PointType::Pixel) {
+        p1.x = (p1.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
+        p1.y = (p1.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
+
+        p2.x = (p2.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
+        p2.y = (p2.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
+
+        p3.x = (p3.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
+        p3.y = (p3.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
+    }
+}
+
+void Triangle::draw() {
+    if (!is_visible) {
+        return;
+    }
+
+    glBegin(GL_TRIANGLES);
+    glColor3f(color.r, color.g, color.b);
+
+    glVertex2f(p1.x, p1.y);
+    glVertex2f(p2.x, p2.y);
+    glVertex2f(p3.x, p3.y);
+
+    glEnd();
+    glFlush();
+}

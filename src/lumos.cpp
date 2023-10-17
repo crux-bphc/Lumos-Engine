@@ -2,6 +2,7 @@
 
 int WINDOW_HEIGHT;
 int WINDOW_WIDTH;
+std::vector<std::thread> App::fixed_update_threads;
 
 
 void App::create_window() {
@@ -79,7 +80,7 @@ App& App::add_system(SystemType type, std::function<void()> function) {
     spdlog::debug("Adding system of type {}", system_type);
     return *this;
 }
-/*
+
 App& App::add_system(SystemType type, std::function<void()> function, int seconds) {
     std::string system_type;
 
@@ -94,7 +95,7 @@ App& App::add_system(SystemType type, std::function<void()> function, int second
     spdlog::debug("Adding system of type {}", system_type);
     return *this;
 }
-*/
+
 void App::run() {
     this->create_window();
 
@@ -107,7 +108,7 @@ void App::run() {
     for (const std::function<void()>& function : startup_functions) {
         function();
     }
-    /*
+    
     spdlog::debug("Running the fixed update functions");
     // Fixed update functions
     for (const std::pair<std::function<void()>, int>& function_pair : fixed_update_functions) {
@@ -122,7 +123,7 @@ void App::run() {
             }
         });
     }
-    */
+    
     spdlog::debug("Running the main loop (contains update function loop)");
     if (!this->headless) {
         // Main loop
@@ -142,7 +143,7 @@ void App::run() {
         }
     }
     
-    /*
+    
     spdlog::debug("Terminating the fixed update functions");
     // Set the termination flag for fixed update threads
     for (auto& thread : fixed_update_threads) {
@@ -150,7 +151,7 @@ void App::run() {
             thread.join();  // Wait for each fixed update thread to finish
         }
     }
-    */
+    
 
     // Clean up GLFW
     glfwTerminate();
