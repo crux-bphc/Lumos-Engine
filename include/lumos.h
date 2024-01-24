@@ -14,6 +14,7 @@
 
 #include "data.h"
 #include "shapes.h"
+#include "batch_renderer.hpp"
 
 /**
  * @class App

@@ -16,9 +16,10 @@ build_src =  ['src/lumos.cpp',
               'src/gl_stuff.cpp',
               'src/shader.cpp',
               'src/shapes.cpp',
-              'src/textures.cpp']
+              'src/textures.cpp',
+              'src/batch_renderer.cpp']
 
-to_build = ['examples/sand_sim.cpp']
+to_build = ['examples/batch_render.cpp']
 
 build_src += stb_src
 build_src += to_build

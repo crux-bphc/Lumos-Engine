@@ -20,6 +20,11 @@ void App::create_window() {
 
     GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT,
                                           this->window_title, nullptr, nullptr);
+    if (!window) {
+        spdlog::error("Failed to create GLFW window");
+        exit(EXIT_FAILURE);
+    }
+    
     this->window = window;
     glfwSetWindowAttrib(window, GLFW_RESIZABLE, this->resizable);
 
