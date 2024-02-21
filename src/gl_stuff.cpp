@@ -3,7 +3,7 @@
 
 
 /**
- * @brief Construct a new VAO::VAO object
+ * @brief Construct a new VAO::VAO object (vertex array object)
  * 
  */
 VAO::VAO() {
@@ -11,7 +11,7 @@ VAO::VAO() {
 }
 
 /**
- * @brief Destroy the VAO::VAO object
+ * @brief Destroy the VAO::VAO object (vertex array object)
  * 
  */
 VAO::~VAO() {
@@ -19,7 +19,7 @@ VAO::~VAO() {
 }
 
 /**
- * @brief 
+ * @brief Bind the Vertex Array Object to the current context
  * 
  */
 void VAO::bind() {
@@ -27,7 +27,7 @@ void VAO::bind() {
 }
 
 /**
- * @brief 
+ * @brief Unbind the Vertex Array Object from the current context
  * 
  */
 void VAO::unbind() {
@@ -35,9 +35,9 @@ void VAO::unbind() {
 } 
 
 /**
- * @brief 
+ * @brief Draw indices using the GL_TRIANGLES rendering mode
  * 
- * @param count 
+ * @param count The number of indices to be drawn
  */
 void VAO::draw(int count) {
     this->bind();
@@ -46,14 +46,14 @@ void VAO::draw(int count) {
 }
 
 /**
- * @brief 
+ * @brief Setting up vertex attributes
  * 
- * @param vbo 
- * @param ref 
- * @param numVals 
- * @param type 
- * @param stride 
- * @param offset 
+ * @param vbo Vertex Buffer Object
+ * @param ref Index of the vertex attribute to be modified
+ * @param numVals The number of components per vertex attribute
+ * @param type Refers to the data type
+ * @param stride The byte offset between consecutive vertex attributes
+ * @param offset Pointer to the first component of the first vertex attribute in the array
  */
 void VAO::linkEnableAttrib(VBO* vbo, int ref, int numVals, GLenum type, int stride, void* offset) {
     this->bind();
@@ -65,9 +65,9 @@ void VAO::linkEnableAttrib(VBO* vbo, int ref, int numVals, GLenum type, int stri
 }
 
 /**
- * @brief 
+ * @brief Binds and unbinds the Element Buffer Object from the current context
  * 
- * @param ebo 
+ * @param ebo Refers to the Element Buffer Object
  */
 void VAO::attachIndex(EBO* ebo) {
     this->bind();
@@ -93,7 +93,7 @@ VBO::~VBO() {
 }
 
 /**
- * @brief 
+ * @brief Bind the Vertex Buffer Object to the current context
  * 
  */
 void VBO::bind() {
@@ -101,7 +101,7 @@ void VBO::bind() {
 }
 
 /**
- * @brief 
+ * @brief Unbind the Vertex Buffer Object from the current context
  * 
  */
 void VBO::unbind() {
@@ -109,10 +109,10 @@ void VBO::unbind() {
 }
 
 /**
- * @brief 
+ * @brief Adds data to a Vertex Buffer Object
  * 
- * @param vertices 
- * @param size 
+ * @param vertices Points to the data to be copied into the buffer
+ * @param size Specifies the size of the data to be stored in the buffer
  */
 void VBO::addData(GLfloat *vertices, int size) {
     this->bind();
@@ -121,11 +121,11 @@ void VBO::addData(GLfloat *vertices, int size) {
 }
 
 /**
- * @brief 
+ * @brief Updates data in a given buffer object
  * 
- * @param vertices 
- * @param size 
- * @param offset 
+ * @param vertices Pointer to the new data
+ * @param size Size of the data to be replaced
+ * @param offset Offset in the buffers data store where the replacement of data will begin
  */
 void VBO::updateData(GLfloat *vertices, int size, int offset) {
     this->bind();
@@ -150,7 +150,7 @@ EBO::~EBO() {
 }
 
 /**
- * @brief 
+ * @brief Bind the Element Buffer Object to the current context
  * 
  */
 void EBO::bind() {
@@ -158,7 +158,7 @@ void EBO::bind() {
 }
 
 /**
- * @brief 
+ * @brief Unbind the Element Buffer Object from the current context
  * 
  */
 void EBO::unbind() {
@@ -166,10 +166,10 @@ void EBO::unbind() {
 }
 
 /**
- * @brief 
+ * @brief Adds data to an Element Buffer Object
  * 
- * @param indices 
- * @param size 
+ * @param indices Pointer to the data to be copied into the buffer
+ * @param size Specifies the size of the data to be added
  */
 void EBO::addData(GLuint *indices, int size) {
     this->bind();
@@ -180,9 +180,9 @@ void EBO::addData(GLuint *indices, int size) {
 /**
  * @brief 
  * 
- * @param indices 
- * @param size 
- * @param offset 
+ * @param indices Pointer to the new data
+ * @param size Specifies the size of the data to be replaced
+ * @param offset Offset in the buffers data store where the replacement of data will begin
  */
 void EBO::updateData(GLuint *indices, int size, int offset) {
     this->bind();
@@ -214,11 +214,11 @@ renderer::renderer() {
 }
 
 /**
- * @brief 
+ * @brief Update data in the Vertex Buffer Object and the Element Buffer Object
  * 
- * @param index 
- * @param vData 
- * @param iData 
+ * @param index Pointer to the new data
+ * @param vData Pointer to vertex data
+ * @param iData Object containing index data
  */
 void renderer::updateData(int index, vertTexQuad* vData, indexData iData) {
     if (vData != nullptr) {
@@ -229,7 +229,7 @@ void renderer::updateData(int index, vertTexQuad* vData, indexData iData) {
 }
 
 /**
- * @brief 
+ * @brief Activates the shader and calls the draw function
  * 
  */
 void renderer::draw() {
@@ -238,7 +238,7 @@ void renderer::draw() {
 }
 
 /**
- * @brief 
+ * @brief increments vbo_pos and returns the old value of vbo_pos
  * 
  * @return int 
  */
