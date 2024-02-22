@@ -104,9 +104,22 @@ void Texture::draw() {
     vao.draw(6);
 }
 
-void Texture::initShader() {
+void Texture::initShader(Camera& camera, GLboolean is2D) {
     shader = new Shader("../assets/shaders/vert.glsl",
                         "../assets/shaders/frag.glsl");
+    shader->Activate();
+    camera.ViewLoc = glGetUniformLocation(shader->ref, "view");
+    if (is2D == GL_FALSE) {
+        camera.ProjectionLoc = glGetUniformLocation(shader->ref, "projection"); 
+    }
+    
+}
+
+//Constructor overload: No camera
+void Texture::initShader(){
+    shader = new Shader("../assets/shaders/vert.glsl",
+                        "../assets/shaders/frag.glsl");
+    shader->Activate();
     
 }
 
@@ -137,3 +150,4 @@ void Texture::updateRect(rect rect) {
     }
     vbo.updateData((float*)vertices, sizeof(vertices));
 }
+

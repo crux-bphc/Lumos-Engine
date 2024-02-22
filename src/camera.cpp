@@ -1,3 +1,57 @@
+#include "camera2D.h"
+
+//2D Camera 
+Camera::Camera(glm::vec2 center, float zoom, float sensitivity)
+{   
+    this->Center = center;
+    this->Zoom = zoom;
+    this->Sensitivity = sensitivity;
+}
+
+Camera::Camera(float posX, float posY, float zoom)
+{
+    this->Center = glm::vec2(posX, posY);
+    this->Zoom = zoom;
+}
+
+glm::mat4 Camera::GetProjectionMatrix(Camera lol,int SCR_WIDTH,int SCR_HEIGHT){
+
+    float left = Center[0] - SCR_WIDTH/2.0f;
+    float right = Center[0] + SCR_WIDTH/2.0f;
+    float bottom = Center[1] + SCR_HEIGHT/2.0f;
+    float top = Center[1] - SCR_HEIGHT/2.0f;
+    
+    return glm::ortho(left, right, bottom, top, -1.0f, 1.0f) * glm::scale(glm::mat4(1.0f), glm::vec3(Zoom, Zoom, 1.0f));
+}
+
+void Camera::ProcessKeyboard(Camera_Movement direction)
+{
+    float velocity = Sensitivity;
+    if (direction == UP)
+        Center[1] -=  velocity;
+    if (direction == DOWN){
+        Center[1] +=  velocity;
+    }
+    if (direction == LEFT)
+        Center[0] -=  velocity;
+    if (direction == RIGHT)
+        Center[0] +=  velocity;
+    if (direction == STATIC)  
+        ;
+}
+
+
+void Camera::ProcessMouseScroll(float yoffset)
+{
+    Zoom -= static_cast<float>(yoffset);
+    if (Zoom < 1.0f)
+        Zoom = 1.0f;
+    if (Zoom > 45.0f)
+        Zoom = 45.0f;
+}
+
+/* 3D Camera
+
 #include "camera.h"
 
 
@@ -85,3 +139,4 @@ void Camera::ProcessMouseScroll(float yoffset)
     if (Zoom > 45.0f)
         Zoom = 45.0f;
 }
+*/

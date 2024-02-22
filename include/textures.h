@@ -4,7 +4,7 @@
 #include "stb/stb_image.h"
 #include <stdio.h>
 #include <spdlog/spdlog.h>
-#include "camera.h"
+#include "camera2D.h"
 
 struct vertTex {
     glm::vec3 position;
@@ -37,11 +37,9 @@ class Texture {
     void load(GLuint slot);
     void unload();
     static std::vector<int> texUnits;
+    static void initShader(Camera& camera, GLboolean is2D = GL_TRUE);
     static void initShader();
     void draw();
     void updateRect(rect rect);
 };
-
-
-
 

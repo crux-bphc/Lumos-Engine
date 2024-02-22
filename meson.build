@@ -19,7 +19,7 @@ build_src =  ['src/lumos.cpp',
               'src/textures.cpp'
               'src/camera.cpp']
 
-to_build = ['examples/moving_rect.cpp']
+to_build = ['examples/texture.cpp']
 
 build_src += stb_src
 build_src += to_build

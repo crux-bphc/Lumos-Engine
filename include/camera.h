@@ -7,6 +7,54 @@
 #include <vector>
 
 enum Camera_Movement {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    STATIC
+};
+
+// Default camera values
+const float SENSITIVITY =  0.01f;
+const float ZOOM        =  0.01f;
+
+
+class Camera
+{
+public:
+
+    glm::vec2 Center;
+    float Sensitivity;
+    float Zoom;
+    GLuint ViewLoc;
+    GLuint ProjectionLoc;
+
+    Camera(glm::vec2 Center = glm::vec2(0.0f, 0.0f), float zoom = ZOOM, float sensitivity = SENSITIVITY);
+    
+    Camera(float posX, float posY, float zoom);
+
+    glm::mat4 GetProjectionMatrix(Camera lol,int SCR_WIDTH, int SCR_HEIGHT);
+
+    void ProcessKeyboard(Camera_Movement direction);
+
+    void ProcessMouseScroll(float yoffset);
+
+
+private:
+
+};
+
+/*3D Camera
+
+#pragma once
+
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <vector>
+
+enum Camera_Movement {
     FORWARD,
     BACKWARD,
     LEFT,
@@ -58,3 +106,4 @@ private:
     void updateCameraVectors();
 };
 
+*/
