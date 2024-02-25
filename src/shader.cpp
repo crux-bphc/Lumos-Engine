@@ -39,7 +39,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 
     glGetShaderiv(vertShader, GL_COMPILE_STATUS, &isCompiled);
     if(isCompiled == GL_FALSE) {
-        printf("Unable to compile Vertex Shader\n");
+        //printf("Unable to compile Vertex Shader\n");
     }
 
 	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -48,7 +48,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
     
     glGetShaderiv(fragShader, GL_COMPILE_STATUS, &isCompiled);
     if(isCompiled == GL_FALSE) {
-        printf("Unable to compile Fragment Shader\n");
+        //printf("Unable to compile Fragment Shader\n");
     }
 
 
@@ -61,7 +61,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
     GLint isLinked = 0;
     glGetProgramiv(ref, GL_LINK_STATUS, (int *)&isLinked);
     if(isLinked == GL_FALSE) {
-        printf("Unable to link Shaders\n");
+        //printf("Unable to link Shaders\n");
     }
 
 	glDeleteShader(vertShader);

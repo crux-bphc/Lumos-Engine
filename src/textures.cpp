@@ -7,7 +7,7 @@ Shader* Texture::shader = nullptr;
 // printf("Compiled...\n");
 
 Texture::Texture(const char* path, GLenum format, GLenum pixelType, rect rect,
-                 GLuint slot) {
+                 GLuint slot, Camera* camera) {
     stbi_set_flip_vertically_on_load(true);
 
     unsigned char* bytes = stbi_load(path, &width, &height, &numColCh, 0);
@@ -64,7 +64,7 @@ Texture::Texture(const char* path, GLenum format, GLenum pixelType, rect rect,
     };
 
     vbo.addData(nullptr, 4 * sizeof(vertTex));
-    updateRect(rect);
+    updateRect(&rect, *camera);
 
     ebo.addData(indices, sizeof(indices));
 
@@ -99,20 +99,18 @@ void Texture::load(GLuint slot) {
 }
 
 void Texture::draw() {
-    shader->Activate();
+    //shader->Activate();
 
     vao.draw(6);
 }
 
-void Texture::initShader(Camera& camera, GLboolean is2D) {
+void Texture::initShader(Camera& camera) {
     shader = new Shader("../assets/shaders/vert.glsl",
                         "../assets/shaders/frag.glsl");
-    shader->Activate();
-    camera.ViewLoc = glGetUniformLocation(shader->ref, "view");
-    if (is2D == GL_FALSE) {
-        camera.ProjectionLoc = glGetUniformLocation(shader->ref, "projection"); 
-    }
-    
+    //camera.ProjectionLoc = glGetUniformLocation(shader->ref, "projection"); 
+    //camera.modelLoc = glGetUniformLocation(shader->ref, "model");
+    //camera.viewLoc = glGetUniformLocation(shader->ref, "view");
+    //printf("%i %i %i", camera.ProjectionLoc, camera.modelLoc, camera.viewLoc);
 }
 
 //Constructor overload: No camera
@@ -123,19 +121,59 @@ void Texture::initShader(){
     
 }
 
-void Texture::updateRect(rect rect) {
-    struct vertTex vertices[4];
+void Texture::updateRect(rect* rect, Camera& camera) {
+    struct vertTex vertices[4]; 
 
+    if (camera.direction == UP) {
+        rect->pos.y += 0.001f;
+        printf("UP");
+    }
+    if (camera.direction == DOWN) {
+        rect->pos.y -= 0.001f;
+        printf("down");
+    }
+    if (camera.direction == LEFT) {
+        rect->pos.x -= 0.001f;
+        printf("left");
+    }
+    if (camera.direction == RIGHT) {
+        rect->pos.x += 0.001f;
+        printf("right");
+    }
+
+
+    vertices[0].position = {rect->pos.x, rect->pos.y, 0.0f};
+    vertices[1].position = {rect->pos.x + rect->dim.x, rect->pos.y, 0.0f};
+    vertices[2].position = {rect->pos.x + rect->dim.x, rect->pos.y + rect->dim.y,
+                            0.0f};
+    vertices[3].position = {rect->pos.x, rect->pos.y + rect->dim.y, 0.0f};
+
+    vertices[0].texCoord = {0.0f, 0.0f};
+    vertices[1].texCoord = {1.0f, 0.0f};
+    vertices[2].texCoord = {1.0f, 1.0f};
+    vertices[3].texCoord = {0.0f, 1.0f};
+
+
+
+    /*
+    
     vertices[0].position = {rect.pos.x, rect.pos.y, 0.0f};
     vertices[1].position = {rect.pos.x + rect.dim.x, rect.pos.y, 0.0f};
     vertices[2].position = {rect.pos.x + rect.dim.x, rect.pos.y + rect.dim.y,
                             0.0f};
     vertices[3].position = {rect.pos.x, rect.pos.y + rect.dim.y, 0.0f};
 
-    vertices[0].texCoord = {0.0f, 0.0f};
-    vertices[1].texCoord = {1.0f, 0.0f};
-    vertices[2].texCoord = {1.0f, 1.0f};
-    vertices[3].texCoord = {0.0f, 1.0f};
+    glm::vec2 position = {rect.pos.x, rect.pos.y};
+    glm::vec2 scale =  {rect.dim.x, rect.dim.y};
+    float rot = 0;
+    
+    glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f));
+    glm::mat4 scal = glm::scale(glm::mat4(1.0f), glm::vec3(scale, 1.0f));
+    glm::mat4 rotat = glm::rotate(glm::mat4(1.0f), rot, glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 model = scal * rot * trans;
+    glUniformMatrix4fv(camera.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    GLuint a = glGetUniformBlockIndex(shader->ref, "projection");
+    //printf("%d\n", a);*/
 
     for (int i = 0; i < 4; i++) {
         vertices[i].colour = {0.0f, 0.0f, 1.0f};
@@ -150,4 +188,3 @@ void Texture::updateRect(rect rect) {
     }
     vbo.updateData((float*)vertices, sizeof(vertices));
 }
-

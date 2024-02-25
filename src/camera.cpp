@@ -1,4 +1,5 @@
-#include "camera2D.h"
+#include "camera.h"
+#include <stdio.h>
 
 //2D Camera 
 Camera::Camera(glm::vec2 center, float zoom, float sensitivity)
@@ -14,32 +15,47 @@ Camera::Camera(float posX, float posY, float zoom)
     this->Zoom = zoom;
 }
 
-glm::mat4 Camera::GetProjectionMatrix(Camera lol,int SCR_WIDTH,int SCR_HEIGHT){
+glm::mat4 Camera::GetProjectionMatrix(int SCR_WIDTH,int SCR_HEIGHT){
 
-    float left = Center[0] - SCR_WIDTH/2.0f;
-    float right = Center[0] + SCR_WIDTH/2.0f;
-    float bottom = Center[1] + SCR_HEIGHT/2.0f;
-    float top = Center[1] - SCR_HEIGHT/2.0f;
-    
-    return glm::ortho(left, right, bottom, top, -1.0f, 1.0f) * glm::scale(glm::mat4(1.0f), glm::vec3(Zoom, Zoom, 1.0f));
+    float left = this->Center[0] - SCR_WIDTH/2.0f;
+    float right = this->Center[0] + SCR_WIDTH/2.0f;
+    float bottom = this->Center[1] + SCR_HEIGHT/2.0f;
+    float top = this->Center[1] - SCR_HEIGHT/2.0f;
+
+    glm::mat4 orthoMatrix = glm::ortho(left, right, bottom, top, 0.01f, 100.0f);
+    glm::mat4 zoomMatrix =  glm::scale(glm::mat4(1.0f), glm::vec3(Zoom,Zoom,Zoom)); 
+    //printf("%f %f\n", Center[0], Center[1]);
+    return (orthoMatrix * zoomMatrix);
 }
 
-void Camera::ProcessKeyboard(Camera_Movement direction)
+void Camera::ProcessKeyboard()
 {
     float velocity = Sensitivity;
-    if (direction == UP)
-        Center[1] -=  velocity;
-    if (direction == DOWN){
-        Center[1] +=  velocity;
+    if (this->direction == UP)
+    {
+        this->Center[1] -=  velocity;
+        //printf("up\n");
     }
-    if (direction == LEFT)
-        Center[0] -=  velocity;
-    if (direction == RIGHT)
-        Center[0] +=  velocity;
-    if (direction == STATIC)  
-        ;
+    if (this->direction == DOWN){
+        this->Center[1] +=  velocity;
+        //printf("down\n");
+    }
+    if (this->direction == LEFT){
+        this->Center[0] -=  velocity;
+        //printf("left\n");
+    }
+    if (this->direction == RIGHT){
+        this->Center[0] +=  velocity;
+        //printf("right\n");
+    }
+    if (this->direction == STATIC)  {
+        ;}
+    //printf("%f\n", Center[0]);
 }
 
+glm::mat4 Camera::GetViewMatrix() {
+    return glm::translate(glm::mat4(1.0f), glm::vec3(-Center[0], -Center[1], 0.0f));
+}
 
 void Camera::ProcessMouseScroll(float yoffset)
 {

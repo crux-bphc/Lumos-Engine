@@ -26,9 +26,13 @@ int main() {
     Camera_Movement direction = STATIC; 
     //glm::vec3 cameraPosition = camera.GetPosition();
     
-    glm::mat4 projection = camera.GetProjectionMatrix(camera,SCR_WIDTH,SCR_HEIGHT);
+    /*glm::mat4 projection = camera.GetProjectionMatrix(camera,SCR_WIDTH,SCR_HEIGHT);
+    GLuint projection_loc = camera.projection_loc;
+    glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
+
     glm::mat4 view = camera.GetViewMatrix();
-    //int uniformLocation = glGetUniformLocation(ref, "view");
+    GLuint view_loc = camera.view_loc;
+    glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));*/
 
     app.add_update_system([&box]() {
         box->draw();

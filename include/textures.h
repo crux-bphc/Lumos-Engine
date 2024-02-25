@@ -4,7 +4,11 @@
 #include "stb/stb_image.h"
 #include <stdio.h>
 #include <spdlog/spdlog.h>
-#include "camera2D.h"
+#include "camera.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+
 
 struct vertTex {
     glm::vec3 position;
@@ -31,15 +35,14 @@ class Texture {
     GLuint ref;
     static GLuint uniform;
     int width, height, numColCh;
-    Texture(const char* path, GLenum format, GLenum pixelType, rect rect, GLuint slot);
+    Texture(const char* path, GLenum format, GLenum pixelType, rect rect, GLuint slot, Camera* camera);
     ~Texture();
     void texParameter(GLenum pname, GLint param);
     void load(GLuint slot);
     void unload();
     static std::vector<int> texUnits;
-    static void initShader(Camera& camera, GLboolean is2D = GL_TRUE);
+    static void initShader(Camera& camera);
     static void initShader();
     void draw();
-    void updateRect(rect rect);
+    void updateRect(rect* rect, Camera& camera);
 };
-

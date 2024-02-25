@@ -15,8 +15,8 @@ enum Camera_Movement {
 };
 
 // Default camera values
-const float SENSITIVITY =  0.01f;
-const float ZOOM        =  0.01f;
+const float SENSITIVITY =  10.0f;
+const float ZOOM        =  0.2f;
 
 
 class Camera
@@ -26,16 +26,20 @@ public:
     glm::vec2 Center;
     float Sensitivity;
     float Zoom;
-    GLuint ViewLoc;
+    Camera_Movement direction;
     GLuint ProjectionLoc;
+    //GLuint modelLoc;
+    GLuint viewLoc;
 
     Camera(glm::vec2 Center = glm::vec2(0.0f, 0.0f), float zoom = ZOOM, float sensitivity = SENSITIVITY);
     
     Camera(float posX, float posY, float zoom);
 
-    glm::mat4 GetProjectionMatrix(Camera lol,int SCR_WIDTH, int SCR_HEIGHT);
+    glm::mat4 GetViewMatrix();
 
-    void ProcessKeyboard(Camera_Movement direction);
+    glm::mat4 GetProjectionMatrix(int SCR_WIDTH, int SCR_HEIGHT);
+
+    void ProcessKeyboard();
 
     void ProcessMouseScroll(float yoffset);
 
