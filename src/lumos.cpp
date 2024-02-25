@@ -1,6 +1,5 @@
 #include "lumos.h"
 
-
 int WINDOW_HEIGHT;
 int WINDOW_WIDTH;
 std::vector<std::thread> App::fixed_update_threads;
@@ -16,7 +15,7 @@ void App::create_window() {
 
     // Initialize GLFW
     if (!glfwInit()) {
-        spdlog::error("Failed to initialize GLFW");
+        spdlog::zerror("Failed to initialize GLFW");
     }
 
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
