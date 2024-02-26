@@ -4,6 +4,10 @@ int WINDOW_HEIGHT;
 int WINDOW_WIDTH;
 std::vector<std::thread> App::fixed_update_threads;
 
+/**
+ * @brief Creates a window, handles debugging and errors
+ * 
+ */
 void App::create_window() {
     if (this->headless) {
         spdlog::debug("Creating headless window");
@@ -21,6 +25,7 @@ void App::create_window() {
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
+    // Turn on debugging if it is defined
     #ifdef DEBUG
 
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
@@ -75,6 +80,15 @@ void App::create_window() {
     //             glGetString(GL_VERSION), __cplusplus);
 }
 
+/**
+ * @brief Construct a new App:: App object
+ * 
+ * @param window_width Width of the window
+ * @param window_height Height of the window
+ * @param window_title Title of the window
+ * @param resizable Boolean value to determine if the window is resizable or not
+ * @param debug Boolean value to determine if debugging is being used or not
+ */
 App::App(int window_width, int window_height, const char* window_title,
          bool resizable, bool debug) {
     spdlog::info("Starting Lumos Engine 🌕");
@@ -90,7 +104,11 @@ App::App(int window_width, int window_height, const char* window_title,
     this->create_window();
 }
 
-// Opens app in headless mode
+/**
+ * @brief Opens app in headless mode
+ * 
+ * @param debug Boolean value to determine if debugging is being used or not
+ */
 App::App(bool debug) {
     spdlog::info("Starting Lumos Engine 🌕");
     if (debug) {
@@ -101,24 +119,53 @@ App::App(bool debug) {
     this->create_window();
 }
 
+/**
+ * @brief Destroy the App:: App object
+ * 
+ */
 App::~App() { spdlog::info("Closing Lumos Engine 🌑"); }
 
+/**
+ * @brief 
+ * 
+ * @param function 
+ * @return App& 
+ */
 App& App::add_startup_system(std::function<void(App&)> function) {
     this->startup_functions.push_back(function);
     return *this;
 }
 
+/**
+ * @brief 
+ * 
+ * @param function 
+ * @return App& 
+ */
 App& App::add_update_system(std::function<void(App&)> function) {
     this->update_functions.push_back(function);
     return *this;
 }
 
+/**
+ * @brief 
+ * 
+ * @param function 
+ * @param milliseconds 
+ * @return App& 
+ */
 App& App::add_fixed_update_system(std::function<void(App&)> function,
                                   int milliseconds) {
     this->fixed_update_functions.push_back({function, milliseconds});
     return *this;
 }
 
+/**
+ * @brief 
+ * 
+ * @param function 
+ * @return App& 
+ */
 App& App::add_key_callback_system(
     std::function<void(int, int, int, int)> function) {
     this->key_callback_functions.push_back(function);
