@@ -17,6 +17,7 @@ A 2-D game engine written in C++.
 1. For GLFW and GLEW: `sudo apt-get install libglfw3-dev libglew-dev`
 2. For spdlog: `sudo apt-get install libspdlog-dev`
 3. glm version `0.9.9.8` (pre installed as header library in `Lumos` directory)
+4. openal: `sudo apt-get install libopenal-dev`
 
 # File structure
 1. The engine code is present in `Lumos` directory
