@@ -1,26 +1,43 @@
 #include "shapes.h"
 
-
+/**
+ * @brief Constructor for the Shape class.
+ * 
+ * @param position Coordinates of shape in pixels (default is (0, 0))
+ * @param color Color of the shape in RGB format (default is white).
+ * @param is_visible Visibility of the shape (default is true).
+ */
 Shape::Shape(const glm::vec2& position, const glm::vec3& color, bool is_visible)
     : position(position), color(color), is_visible(is_visible) {}
 
+/**
+ * @brief Hides the shape by changing the is_visible parameter.
+ */
 void Shape::hide() {
     this->is_visible = false;
 }
 
-Shape::~Shape() {
-}
+/**
+ * @brief Destructor for the Shape class.
+ */
+Shape::~Shape() {}
 
-// We are assuming the vector point are given in such a fashion such that
-// first two point are lower left points and they rest are present in a clockwise manner
-// the position are in pixels
+/**
+ * @brief Constructor for the Quad class.
+ * 
+ * @param coordinates Coordinates of the shape in pixels (default is (0, 0)).
+ * @param color Color of the shape in RGB format (default is white).
+ * @param point_type Type of coordinates (default is PointType::Fraction of the window) Can also use PointType::Pixel.
+ */
 Quad::Quad(const std::vector<float>& coordinates, const std::vector<float>& color, PointType point_type)
     : Shape({coordinates[0], coordinates[1]}, {color[0], color[1], color[2]}) {
+    // Calculate the minimum and maximum coordinates
     float min_x = std::min(std::min(coordinates[0], coordinates[2]), std::min(coordinates[4], coordinates[6]));
     float min_y = std::min(std::min(coordinates[1], coordinates[3]), std::min(coordinates[5], coordinates[7]));
     float max_x = std::max(std::max(coordinates[0], coordinates[2]), std::max(coordinates[4], coordinates[6]));
     float max_y = std::max(std::max(coordinates[1], coordinates[3]), std::max(coordinates[5], coordinates[7]));
 
+    // Adjust the position and size based on the point type
     switch (point_type) {
         case PointType::Pixel: {
             this->position.x = (this->position.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
@@ -43,8 +60,18 @@ Quad::Quad(const std::vector<float>& coordinates, const std::vector<float>& colo
     this->color = glm::vec3{color[0], color[1], color[2]};
 }
 
+/**
+ * @brief Constructor for the Quad class.
+ * 
+ * @param position Position of the shape in 2D space.
+ * @param height Height of the shape.
+ * @param width Width of the shape.
+ * @param color Color of the shape in RGB format.
+ * @param point_type Type of coordinates (default is PointType::Fraction of the window).
+ */
 Quad::Quad(const glm::vec2& position, float height, float width, const glm::vec3& color, PointType point_type)
     : Shape(position, color) {
+    // Adjust the position and size based on the point type
     switch (point_type) {
         case PointType::Pixel: {
             this->position.x = (this->position.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
@@ -64,6 +91,11 @@ Quad::Quad(const glm::vec2& position, float height, float width, const glm::vec3
     }
 }
 
+/**
+ * @brief Draws the Quad object.
+ * 
+ * This function uses OpenGL to draw the Quad object on the screen.
+ */
 void Quad::draw() {
     if (!this->is_visible) {
         return;
@@ -80,9 +112,17 @@ void Quad::draw() {
     glFlush();
 }
 
-// It's in the shape of a square though (idk why)
-Point::Point(const glm::vec2& position, const glm::vec3& color, float size, PointType point_type)
-    : Shape(position, color) {
+/**
+ * @brief Constructor for the Point class.
+ * 
+ * @param position Position of the point in 2D space.
+ * @param color Color of the point in RGB format.
+ * @param size Size of the point.
+ * @param point_type Type of coordinates (default is PointType::Fraction of the window).
+ */
+Point::Point(const glm::vec2& position, const glm::vec3& color, float size, PointType point_type) 
+    : Shape(position, color) { //It's in the shape of a square though (idk why)
+    // Adjust the position based on the point type
     switch (point_type) {
         case PointType::Pixel: {
             this->position.x = (this->position.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
@@ -99,6 +139,11 @@ Point::Point(const glm::vec2& position, const glm::vec3& color, float size, Poin
 //     : Shape({coordinates[0], coordinates[1]}, {color[0], color[1], color[2]}) {
 // }
 
+/**
+ * @brief Draws the Point object.
+ * 
+ * This function uses OpenGL to draw the Point object on the screen.
+ */
 void Point::draw() {
     if (!this->is_visible) {
         return;
@@ -113,9 +158,18 @@ void Point::draw() {
     glFlush();
 }
 
-    
+/**
+ * @brief Constructor for the Circle class.
+ * 
+ * @param position Position of the circle in 2D space.
+ * @param color Color of the circle in RGB format.
+ * @param radius Radius of the circle.
+ * @param shaded Whether the circle should be shaded or not.
+ * @param point_type Type of coordinates (default is PointType::Fraction of the window).
+ */
 Circle::Circle(const glm::vec2& position, const glm::vec3& color, float radius, bool shaded, PointType point_type)
     : Shape(position, color), radius(radius), shaded(shaded) {
+    // Adjust the position based on the point type
     switch (point_type) {
         case PointType::Pixel: {
             this->position.x = (this->position.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
@@ -127,8 +181,18 @@ Circle::Circle(const glm::vec2& position, const glm::vec3& color, float radius, 
     }
 }
 
+/**
+ * @brief Constructor for the Circle class.
+ * 
+ * @param coordinates Coordinates of the circle in pixels.
+ * @param color Color of the circle in RGB format.
+ * @param radius Radius of the circle.
+ * @param shaded Whether the circle should be shaded or not.
+ * @param point_type Type of coordinates (default is PointType::Fraction of the window).
+ */
 Circle::Circle(const std::vector<float>& coordinates, const std::vector<float>& color, float radius, bool shaded, PointType point_type)
     : Shape({coordinates[0], coordinates[1]}, {color[0], color[1], color[2]}), radius(radius), shaded(shaded) {
+    // Adjust the position based on the point type
     switch (point_type) {
         case PointType::Pixel: {
             this->position.x = (coordinates[0] / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
@@ -140,6 +204,15 @@ Circle::Circle(const std::vector<float>& coordinates, const std::vector<float>& 
     }
 }
 
+/**
+ * @brief Draws the Circle object on the screen.
+ * 
+ * If the circle is visible, it can be drawn as a filled circle or an outline.
+ * The number of segments can be adjusted to control the smoothness or coarseness of the circle.
+ * Uses GL_TRIANGLE_FAN to draw a filled circle and GL_LINE_LOOP to draw the circle as an outline.
+ * 
+ * @note This function uses OpenGL for drawing.
+ */
 void Circle::draw() {
     if (!is_visible) {
         return;
@@ -186,8 +259,16 @@ void Circle::draw() {
     }
 }
 
+/**
+ * @brief Constructor for the Line2D class.
+ * 
+ * @param points Points that define the line in 2D space.
+ * @param color Color of the line in RGB format.
+ * @param point_type Type of coordinates (default is PointType::Fraction of the window).
+ */
 Line2D::Line2D(std::vector<glm::vec2>& points, const glm::vec3& color, PointType point_type)
     : Shape(glm::vec2{0.0f, 0.0f}, color), points(points) {
+    // Adjust the position based on the point type
     switch (point_type) {
         case PointType::Pixel: {
             for (glm::vec2& point : points) {
@@ -201,6 +282,11 @@ Line2D::Line2D(std::vector<glm::vec2>& points, const glm::vec3& color, PointType
     }
 }
 
+/**
+ * @brief Draws the Line2D object.
+ * 
+ * This function uses OpenGL to draw the Line2D object on the screen.
+ */
 void Line2D::draw() {
     if (!is_visible || points.size() < 2) {
         return;
@@ -218,13 +304,22 @@ void Line2D::draw() {
     glFlush();
 }
 
-
+/**
+ * @brief Constructor for the Triangle class.
+ * 
+ * @param point1 First point of the triangle.
+ * @param point2 Second point of the triangle.
+ * @param point3 Third point of the triangle.
+ * @param color Color of the triangle in RGB format.
+ * @param point_type Type of coordinates (default is PointType::Fraction of the window).
+ */
 Triangle::Triangle(const glm::vec2& point1, const glm::vec2& point2, const glm::vec2& point3, const glm::vec3& color, PointType point_type)
     : Shape(glm::vec2{0.0f, 0.0f}, color) {
     p1 = point1;
     p2 = point2;
     p3 = point3;
 
+    // Adjust the position based on the point type
     if (point_type == PointType::Pixel) {
         p1.x = (p1.x / static_cast<float>(WINDOW_WIDTH)) * 2.0f - 1.0f;
         p1.y = (p1.y / static_cast<float>(WINDOW_HEIGHT)) * 2.0f - 1.0f;
@@ -237,6 +332,11 @@ Triangle::Triangle(const glm::vec2& point1, const glm::vec2& point2, const glm::
     }
 }
 
+/**
+ * @brief Draws the Triangle object.
+ * 
+ * This function uses OpenGL to draw the Triangle object on the screen.
+ */
 void Triangle::draw() {
     if (!is_visible) {
         return;
