@@ -20,12 +20,12 @@ int main() {
     Camera* camera = new Camera(glm::vec3(texRect.pos.x , texRect.pos.y , 1.0f));
     Texture::initShader(*camera);
     Texture* tex =
-        new Texture("../assets/ass.png", GL_RGB, GL_UNSIGNED_BYTE, texRect, 0, camera);
+        new Texture("./assets/ass.png", GL_RGB, GL_UNSIGNED_BYTE, texRect, 0, camera);
 
 
-    //GLuint projection_loc = camera->ProjectionLoc;    
-    //printf("%i", projection_loc);
-    //GLuint view_loc = camera->viewLoc;
+    GLuint projection_loc = camera->ProjectionLoc;    
+    printf("%i", projection_loc);
+    GLuint view_loc = camera->viewLoc;
 
     app.add_update_system([tex]() { tex->draw(); })
         .add_update_system([&texRect, tex, &camera]() {
@@ -51,7 +51,7 @@ int main() {
         .add_fixed_update_system([&camera]() {camera->ProcessKeyboard(); })
         .add_fixed_update_system([&]() {
             glm::mat4 projection = camera->GetProjectionMatrix(SCR_WIDTH,SCR_HEIGHT);
-            //glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
+            glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
             })
 
         .add_scroll_callback_system([&] (int xoffset, int yoffset, int action) {
@@ -60,7 +60,7 @@ int main() {
 
         .add_fixed_update_system([&]() {
         glm::mat4 view = camera->GetViewMatrix();
-        //glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));
         })
         
         .run();

@@ -32,7 +32,7 @@ Texture::Texture(const char* path, GLenum format, GLenum pixelType, rect rect,
     texParameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
     texParameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    load(slot);
+    
 
     /*struct vertTex vertices[4];
 
@@ -82,6 +82,8 @@ Texture::Texture(const char* path, GLenum format, GLenum pixelType, rect rect,
                          (void*)offsetof(vertTex, scale));
 
     u_textures = glGetUniformLocation(shader->ref, "u_textures");
+
+    load(slot);
 }
 
 Texture::~Texture() { glDeleteTextures(1, &ref); }
@@ -105,8 +107,9 @@ void Texture::draw() {
 }
 
 void Texture::initShader(Camera& camera) {
-    shader = new Shader("../assets/shaders/vert.glsl",
-                        "../assets/shaders/frag.glsl");
+    shader = new Shader("./assets/shaders/vert.glsl",
+                        "./assets/shaders/frag.glsl");
+    shader->Activate();
     //camera.ProjectionLoc = glGetUniformLocation(shader->ref, "projection"); 
     //camera.modelLoc = glGetUniformLocation(shader->ref, "model");
     //camera.viewLoc = glGetUniformLocation(shader->ref, "view");
@@ -115,8 +118,8 @@ void Texture::initShader(Camera& camera) {
 
 //Constructor overload: No camera
 void Texture::initShader(){
-    shader = new Shader("../assets/shaders/vert.glsl",
-                        "../assets/shaders/frag.glsl");
+    shader = new Shader("./assets/shaders/vert.glsl",
+                        "./assets/shaders/frag.glsl");
     shader->Activate();
     
 }
@@ -124,7 +127,7 @@ void Texture::initShader(){
 void Texture::updateRect(rect* rect, Camera& camera) {
     struct vertTex vertices[4]; 
 
-    if (camera.direction == UP) {
+    /*if (camera.direction == UP) {
         rect->pos.y += 0.001f;
         printf("UP");
     }
@@ -139,7 +142,7 @@ void Texture::updateRect(rect* rect, Camera& camera) {
     if (camera.direction == RIGHT) {
         rect->pos.x += 0.001f;
         printf("right");
-    }
+    }*/
 
 
     vertices[0].position = {rect->pos.x, rect->pos.y, 0.0f};

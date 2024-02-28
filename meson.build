@@ -16,7 +16,7 @@ build_src =  ['src/lumos.cpp',
               'src/gl_stuff.cpp',
               'src/shader.cpp',
               'src/shapes.cpp',
-              'src/textures.cpp'
+              'src/textures.cpp',
               'src/camera.cpp']
 
 to_build = ['examples/texture.cpp']
