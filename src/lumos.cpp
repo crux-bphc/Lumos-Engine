@@ -89,6 +89,8 @@ void App::create_window() {
         }
     
     #endif
+    this->Input = new input(window);
+    
 
     //spdlog::info("Using OpenGL version {}, and C++ version {} ",
     //             glGetString(GL_VERSION), __cplusplus);
@@ -174,12 +176,15 @@ App& App::add_fixed_update_system(std::function<void(App&)> function,
     return *this;
 }
 
+
 /**
  * @brief Adds callback system for keys
  * 
  * @param function Pass a function that takes (key, scancode, action, and mods) 
  * @return App& 
  */
+/*
+
 App& App::add_key_callback_system(
     std::function<void(int, int, int, int)> function) {
     this->key_callback_functions.push_back(function);
@@ -208,6 +213,7 @@ App& App::add_scroll_callback_system(
     this->scroll_callback_functions.push_back(function);
     return *this;
 }
+*/
 
 /**
  * @brief Closes the application
@@ -223,6 +229,7 @@ void App::close() {
  * 
  * @return std::pair<double, double> 
  */
+/*
 std::pair<double, double> App::get_mouse_position() {
     double xpos, ypos;
     glfwGetCursorPos(this->window, &xpos, &ypos);
@@ -239,7 +246,7 @@ bool App::is_mouse_pressed() {
     spdlog::warn("is_mouse_pressed is not working as intended");
     return this->__is_mouse_pressed;
 }
-
+*/
 
 /**
  * @brief Runs the application.
@@ -257,6 +264,8 @@ void App::run() {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
+
+    /*
     glfwSetWindowUserPointer(this->window, this);
 
     
@@ -295,6 +304,7 @@ void App::run() {
                 function(xoffset, yoffset, 0);
             }
         });
+    */
 
     
 
@@ -471,6 +481,7 @@ void glDebugOutput(GLenum source, GLenum type,
             break;
         case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
             spdlog::debug("OpenGL Debug Message (Deprecated Behaviour) ID {0}:, {1}", id, message);
+            break;
         default:
             spdlog::debug("OpenGL Debug Message ID {0}: {1}", id, message);
 

@@ -18,6 +18,7 @@
 #include "shapes.h"
 #include "entt/entt.hpp"
 #include "textures.h"
+#include "input.h"
 
 
 /**
@@ -43,17 +44,20 @@ class App {
     static std::vector<std::thread>
         fixed_update_threads;  ///< List of fixed update threads.
     
+    /*
     std::vector<std::function<void(int, int, int, int)>>
         key_callback_functions;  ///< List of key callback functions.
     std::vector<std::function<void(int, int)>>
         mouse_callback_functions;  ///< List of mouse callback functions.
     std::vector<std::function<void(int, int, int)>>
         scroll_callback_functions;  ///< List of scroll callback functions.
+    bool __is_mouse_pressed = false; ///< Flag indicating if the mouse is pressed.
+    */
+
+
     bool resizable;         ///< Flag indicating if the window is resizable.
     bool headless = false;  ///< Flag indicating headless mode.
-    bool __is_mouse_pressed = false; ///< Flag indicating if the mouse is pressed.
     
-
     /**
      * @brief Creates the application window using GLFW.
      *
@@ -92,14 +96,15 @@ class App {
     App& add_update_system(std::function<void(App&)> function);
     App& add_fixed_update_system(std::function<void(App&)> function,
                                  int milliseconds = 1000 / 60);
-    App& add_key_callback_system(std::function<void(int, int, int, int)> function);
-    App& add_mouse_callback_system(std::function<void(int, int)> function);
-    App& add_scroll_callback_system(std::function<void(int, int, int)> function);
+    //App& add_key_callback_system(std::function<void(int, int, int, int)> function);
+    //App& add_mouse_callback_system(std::function<void(int, int)> function);
+    //App& add_scroll_callback_system(std::function<void(int, int, int)> function);
     App& draw();
 
-    std::pair<double, double> get_mouse_position();
-    bool is_mouse_pressed();
+    //std::pair<double, double> get_mouse_position();
+    //bool is_mouse_pressed();
     entt::registry reg;
+    input* Input;
     /**
      * @brief Runs the Lumos application.
      *

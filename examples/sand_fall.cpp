@@ -89,9 +89,8 @@ int main() {
                 }
             },
             10)
-        .add_key_callback_system([&](int key, int scancode, int action,
-                                     int mods) {
-            if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+        .add_update_system([](App& app) {
+            if (app.Input->isKeyPressed(GLFW_KEY_ESCAPE)) {
                 spdlog::debug("Escape key pressed, closing the application");
                 app.close();
             }

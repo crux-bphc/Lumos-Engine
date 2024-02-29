@@ -3,4 +3,4 @@
 	url = https://github.com/skypjack/entt.git
 [submodule "external/glm"]
 	path = external/glm
-	url = git@github.com:g-truc/glm.git
+	url = https://github.com/g-truc/glm.git
