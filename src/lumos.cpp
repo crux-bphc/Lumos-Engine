@@ -109,6 +109,11 @@ App::App(bool debug) {
 
 App::~App() { spdlog::info("Closing Lumos Engine 🌑"); }
 
+void App::SetCameraInput(float arr[2]){
+    this->movementArray[0] = arr[0];
+    this->movementArray[1] = arr[1];
+}
+
 App& App::add_startup_system(std::function<void(App&)> function) {
     this->startup_functions.push_back(function);
     return *this;
@@ -311,7 +316,10 @@ App& App::draw() {
     for(auto entity: view) {
         auto isDrawn_m = view.get<isDrawn>(entity);
         if (isDrawn_m.draw) {
-            auto [position_m, dimention_m, colour_m, textureIndex_m] = view.get<position, dimention, colour, textureIndex>(entity);
+            auto [dimention_m, colour_m, textureIndex_m] = view.get<position, dimention, colour, textureIndex>(entity);
+            auto& position_m = view.get<position>(entity)
+            position_m.pos.x += (movementArray[0]); 
+            position_m.pos.y += (movementArray[1]);
             glm::vec2 pos = { (position_m.pos.x - 0.5f) * 2.0f, (position_m.pos.y - 0.5f) * 2.0f};
             glm::vec2 dim = { (dimention_m.dim.x * 2.0f), (dimention_m.dim.y * 2.0f)};
             glm::vec3 col = colour_m.colour;

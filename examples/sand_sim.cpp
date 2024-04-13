@@ -12,6 +12,7 @@ float brushRadius = CELL_SIZE_X;  // Initial brush radius
 
 int main() {
     App* app = new App(WORLD_WIDTH, WORLD_HEIGHT, "Sand Sim");
+    Camera camera = Camera(app->Input);
     Circle* locator = new Circle(glm::vec2{WORLD_WIDTH / 2, WORLD_HEIGHT / 2},
                                  glm::vec3{1.0, 1.0, 1.0}, brushRadius * 2.0f,
                                  false, PointType::Pixel);
@@ -132,6 +133,12 @@ int main() {
                                             100.0f));  // Adjust the maximum
                                                        // brush radius if needed
             spdlog::info("Brush radius: {}", brushRadius);
+        })
+        .add_fixed_update_system([&] (App&) {
+            camera.UpdateMovementArray();
+        })
+        .add_fixed_update_system([&] (App& app) {
+            app.SetCameraInput(camera.movementArray);
         });
     app->run();
 

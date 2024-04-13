@@ -19,10 +19,11 @@ build_src =  ['src/lumos.cpp',
               'src/shader.cpp',
               'src/shapes.cpp',
               'src/textures.cpp',
-              'src/input.cpp']
+              'src/input.cpp',
+              'src/camera.cpp']
 
 
-to_build = ['examples/checkerboard.cpp']
+to_build = ['examples/sand_sim.cpp']
 
 build_src += stb_src
 build_src += to_build

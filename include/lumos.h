@@ -19,6 +19,7 @@
 #include "entt/entt.hpp"
 #include "textures.h"
 #include "input.h"
+#include "camera.h"
 #include <chrono>
 #include <ctime>
 
@@ -95,6 +96,8 @@ class App {
      * @brief Destructor for the App class.
      */
     ~App();
+
+    void SetCameraInput(float arr[2] );
 
     App& add_startup_system(std::function<void(App&)> function);
     App& add_update_system(std::function<void(App&)> function);
