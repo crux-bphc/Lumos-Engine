@@ -222,10 +222,10 @@ renderer::renderer() {
  */
 void renderer::updateData(int index, vertTexQuad* vData, indexData iData) {
     if (vData != nullptr) {
-        vbo.updateData((float*)vData, sizeof(vertTexQuad), index*sizeof(vertTexQuad));
+        vbo_data[index] = *vData;
     }
     //uint indexData[] = INDEX((uint)index);
-    ebo.updateData(iData.indexData, sizeof(indexData), index*sizeof(indexData));
+    ebo_data[index] = iData;
 }
 
 /**
@@ -233,8 +233,11 @@ void renderer::updateData(int index, vertTexQuad* vData, indexData iData) {
  * 
  */
 void renderer::draw() {
+    vbo.updateData((float*)vbo_data, vbo_pos * sizeof(vertTexQuad), 0);
+    ebo.updateData((uint*)ebo_data, vbo_pos * sizeof(indexData), 0);
     shader->Activate();
     vao.draw(vbo_pos * 6);
+    vbo_pos = 0;
 }
 
 /**
@@ -243,6 +246,49 @@ void renderer::draw() {
  * @return int 
  */
 int renderer::getFree() {
-    vbo_pos = vbo_pos + 1;
-    return vbo_pos - 1;  
+
+    if (freeStack.empty()) {
+        return vbo_pos++;
+    }
+    else {
+        int a = freeStack.back();
+        freeStack.pop_back();
+        return a;
+    }
 }
+
+/**
+ * @brief Draws quad of given color and position using the renderer
+ * 
+ * @return int 
+ */
+
+void renderer::drawQuad(glm::vec2 pos, glm::vec2 dim, glm::vec3 col, GLint texIndex) {
+    //float angle = rect.angle;
+    //angle = angle + 1;
+    struct vertTexQuad vertQuad;
+    vertQuad.vertices[0].position = {pos.x, pos.y, 0.0f};
+    vertQuad.vertices[1].position = {pos.x + dim.x, pos.y, 0.0f};
+    vertQuad.vertices[2].position = {pos.x + dim.x, pos.y + dim.y,0.0f};
+    vertQuad.vertices[3].position = {pos.x, pos.y + dim.y, 0.0f};
+    vertQuad.vertices[0].texCoord = {0.0f, 0.0f};
+    vertQuad.vertices[1].texCoord = {1.0f, 0.0f};
+    vertQuad.vertices[2].texCoord = {1.0f, 1.0f};
+    vertQuad.vertices[3].texCoord = {0.0f, 1.0f};
+
+    for(int i = 0; i < 4; i++) {
+        vertQuad.vertices[i].colour = col;
+    }
+
+    for(int i = 0; i < 4; i++) {
+        vertQuad.vertices[i].texIndex = static_cast<float>(texIndex);
+    }
+    int index = getFree();
+    updateData(index, &vertQuad, INDEX((uint)index));
+    if (index == REND_MAX - 1) {
+        draw();
+    }
+}
+
+
+

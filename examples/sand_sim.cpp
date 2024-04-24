@@ -126,7 +126,7 @@ int main() {
             spdlog::info("xoffset: {}, yoffset: {}", 
                         app.Input->scrollPos.x,
                         app.Input->scrollPos.y);
-            brushRadius += app.Input->scrollPos.y * SCROLL_SENSITIVITY;
+            brushRadius = app.Input->scrollPos.y * SCROLL_SENSITIVITY;
             brushRadius = std::max(float(CELL_SIZE_X),
                                    std::min(brushRadius,
                                             100.0f));  // Adjust the maximum

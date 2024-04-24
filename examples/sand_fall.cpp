@@ -7,11 +7,15 @@
 #define CELL_SIZE_X 2
 #define CELL_SIZE_Y 2
 
+struct colGrid {
+    entt::entity entt;
+    bool isShown;
+};
+
 int main() {
     App app = App(WORLD_WIDTH, WORLD_HEIGHT, "Testing Window");
 
-    std::vector<std::vector<Quad*>> grid;
-
+    colGrid grid[GRID_SIZE_X][GRID_SIZE_Y];
     // Initialize grid
     for (size_t i = 0; i < GRID_SIZE_X; i++) {
         std::vector<Quad*> temp;
@@ -27,25 +31,27 @@ int main() {
                        RAND_MAX);  // 0.27 is a starting point, adjust as needed
             float blue =
                 0.07;  // Constant value for blue to maintain brownish tone
-            Quad* q = new Quad{
-                glm::vec2{(WORLD_WIDTH / GRID_SIZE_X) * CELL_SIZE_X * i,
-                          (WORLD_HEIGHT / GRID_SIZE_Y) * CELL_SIZE_Y * j},
-                (WORLD_HEIGHT / GRID_SIZE_Y) * CELL_SIZE_Y,
-                (WORLD_WIDTH / GRID_SIZE_X) * CELL_SIZE_X,
-                //  glm::vec3{float(rand()) / RAND_MAX, 0.0, 0.0},
-                glm::vec3{red, green, blue}, PointType::Pixel};
-            // if (j >= (GRID_SIZE_Y) / 10)
-            q->is_visible = false;
-            temp.push_back(q);
+            rect rect_in = {{glm::vec2{PIXEL(((float)WORLD_WIDTH / GRID_SIZE_X) * CELL_SIZE_X * i, WORLD_WIDTH),
+                          PIXEL(((float)WORLD_HEIGHT / GRID_SIZE_Y) * CELL_SIZE_Y * j, WORLD_HEIGHT)}},
+                     {glm::vec2{PIXEL(((float)WORLD_WIDTH / GRID_SIZE_Y) * CELL_SIZE_Y, WORLD_WIDTH),
+                          PIXEL(((float)WORLD_WIDTH / GRID_SIZE_X) * CELL_SIZE_X, WORLD_HEIGHT)}},
+                      0,
+                     {glm::vec3{red, green, blue}}};
+            auto ent = sprite2D(app, rect_in, false);
+            grid[i][j] = {ent, false};
         }
-        grid.push_back(temp);
     }
 
     app.add_update_system([&] (App&){
            for (size_t i = 0; i < GRID_SIZE_X; i++) {
                for (size_t j = 0; j < GRID_SIZE_Y; j++) {
-                   if (grid[i][j]->is_visible) {
-                       grid[i][j]->draw();
+                   auto &toDraw = app.reg.get<isDrawn>(grid[i][j].entt);
+                   if (grid[i][j].isShown) {
+                       toDraw = {true};
+                       spdlog::debug("pos: {}, {}", i, j);
+                   }
+                   else {
+                       toDraw = {false};
                    }
                }
            }
@@ -55,12 +61,12 @@ int main() {
                 for (size_t i = 0; i < GRID_SIZE_X; i++) {
                     for (size_t j = 1; j < GRID_SIZE_Y;
                          j++) {  // Last layer will not get update (for now)
-                        if (grid[i][j]->is_visible) {
+                        if (grid[i][j].isShown) {
                             if (!grid[i][j - 1]
-                                     ->is_visible) {  // If there is no particle
+                                     .isShown) {  // If there is no particle
                                                       // just beneath it
-                                grid[i][j]->is_visible = false;
-                                grid[i][j - 1]->is_visible = true;
+                                grid[i][j].isShown = false;
+                                grid[i][j - 1].isShown = true;
                             } else {
                                 int direction = (rand() % 2) * 2 - 1;
 
@@ -68,9 +74,9 @@ int main() {
                                     i + direction < GRID_SIZE_X) {
                                     // Check boundaries before moving
                                     if (!grid[i + direction][j - 1]
-                                             ->is_visible) {
-                                        grid[i][j]->is_visible = false;
-                                        grid[i + direction][j - 1]->is_visible =
+                                             .isShown) {
+                                        grid[i][j].isShown = false;
+                                        grid[i + direction][j - 1].isShown =
                                             true;
                                     }
                                 }
@@ -84,7 +90,7 @@ int main() {
             [&] (App&){
                 for (size_t i = 0; i < GRID_SIZE_X; i++) {
                     if (rand() % 100 == 0) {
-                        grid[i][GRID_SIZE_Y - 1]->is_visible = true;
+                        grid[i][GRID_SIZE_Y - 1].isShown = true;
                     }
                 }
             },

@@ -22,7 +22,7 @@ build_src =  ['src/lumos.cpp',
               'src/input.cpp']
 
 
-to_build = ['examples/texture.cpp']
+to_build = ['examples/checkerboard.cpp']
 
 build_src += stb_src
 build_src += to_build
@@ -31,7 +31,9 @@ executable(
   'debug', build_src, 
   dependencies: [glfwDep, glewDep, openGLDep, spdlogDep], 
   include_directories : [incdir, extdir, enttdir, glmdir],
+  ## Enable for examples that use shapes.cpp
+  cpp_args: ['-DLEGACY'],
   # Enable for profiling
-  # cpp_args: ['-pg', '-no-pie'],
-  # link_args: ['-pg', '-no-pie'],
+  # cpp_args: ['-pg', '-no-pie', '-fno-builtin'],
+  # link_args: ['-pg', '-no-pie', '-fno-builtin'],
   )

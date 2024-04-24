@@ -11,6 +11,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "vector"
+#include <spdlog/spdlog.h>
 
 #include "data.h"
 

@@ -10,6 +10,9 @@
 #include "shader.h"
 #include "entt/entt.hpp"
 #include <spdlog/spdlog.h>
+#include <chrono>
+
+typedef std::chrono::high_resolution_clock Clock;
 
 #define REND_MAX 1000
 
@@ -110,8 +113,10 @@ struct isDrawn {
 
 class renderer {
   public:
+    std::vector<int> freeStack;
     VAO vao;
-    //float vbo_data[4 * REND_MAX * sizeof(vertTex)];
+    vertTexQuad vbo_data[REND_MAX];
+    indexData ebo_data[REND_MAX];
     int vbo_pos = 0;
     VBO vbo;
     //unsigned int ebo_data[6 * REND_MAX];
@@ -120,6 +125,7 @@ class renderer {
     renderer();
     void updateData(int index, vertTexQuad* vData, indexData iData);
     void draw();
+    void drawQuad(glm::vec2 pos, glm::vec2 dim, glm::vec3 col, GLint texIndex);
     int getFree();
 };
 

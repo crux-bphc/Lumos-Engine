@@ -31,6 +31,6 @@ inputPos input::getMousePosition() {
 }
 
 void input::scrollCallback(GLFWwindow*, double xoffset, double yoffset) {
-    scrollPos.x = xoffset;
-    scrollPos.y = yoffset;
+    scrollPos.x += xoffset;
+    scrollPos.y += yoffset;
 }
