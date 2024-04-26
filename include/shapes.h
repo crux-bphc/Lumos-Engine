@@ -35,6 +35,7 @@ public:
     glm::vec2 position;     ///< Position of the shape.
     glm::vec3 color;        ///< Color of the shape.
     bool is_visible;        ///< Flag indicating whether the shape is visible.
+    std::vector<std::pair<float, float>> vertices;  // Vector to store x,y pairs
 
     /**
      * @brief Constructor for the Shape class.
@@ -58,6 +59,8 @@ public:
      * @brief Destructor for the Shape class.
      */
     virtual ~Shape();
+
+    virtual std::string getShapeType() const = 0; 
 };
 
 /**
@@ -91,6 +94,9 @@ public:
      * @brief Method to draw the quad.
      */
     void draw() override;
+
+    std::string getShapeType() const override { return "Quad"; }
+
 };
 
 /**
@@ -114,6 +120,8 @@ public:
      * @brief Method to draw the point.
      */
     void draw() override;
+
+    std::string getShapeType() const override { return "Point"; }
 };
 
 /**
@@ -149,6 +157,8 @@ public:
      * @brief Method to draw the circle.
      */
     void draw() override;
+
+    std::string getShapeType() const override { return "Circle"; }
 };
 
 /**
@@ -171,6 +181,8 @@ public:
      * @brief Method to draw the line.
      */
     void draw() override;
+
+    std::string getShapeType() const override { return "Line2D"; }
 };
 
 /**
@@ -195,4 +207,8 @@ public:
      * @brief Method to draw the triangle.
      */
     void draw() override;
+
+    std::string getShapeType() const override { return "Triangle"; }
 };
+
+bool collisionCheck(const Shape& obj1, const Shape& obj2); 
