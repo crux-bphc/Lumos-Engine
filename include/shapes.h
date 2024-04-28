@@ -211,4 +211,18 @@ public:
     std::string getShapeType() const override { return "Triangle"; }
 };
 
+bool SATCollision(const std::vector<glm::vec2>& polygon1, const std::vector<glm::vec2>& polygon2); 
+
+bool onSegment(std::pair<float, float> p, std::pair<float, float> q, std::pair<float, float> r);
+
+int orientation(std::pair<float, float> p, std::pair<float, float> q, std::pair<float, float> r);
+
+bool doLinesIntersect(std::pair<float, float> p1, std::pair<float, float> q1, std::pair<float, float> p2, std::pair<float, float> q2);
+
+bool isPointOnLine(const glm::vec2& point, const glm::vec2& line1, const glm::vec2& line2);
+
+bool isPointInsidePolygon(const Point& point, const glm::vec2 polygon); 
+
+bool DoesLineCrossLine(const Line2D& obj1, const Line2D& obj2);
+
 bool collisionCheck(const Shape& obj1, const Shape& obj2); 

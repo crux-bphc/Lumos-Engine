@@ -213,8 +213,8 @@ Line2D::Line2D(std::vector<glm::vec2>& points, const glm::vec3& color, PointType
         default:
             break;
     }
-    this->vertices.push_back(points[0]);
-    this->vertices.push_back(points[1]);
+    this->vertices.push_back({points[0][0], points[0][1]});
+    this->vertices.push_back({points[1][0], points[1][1]});
 
 }
 
@@ -283,25 +283,27 @@ Sprite2D seems miscellaneous, will need to use vertices to classify into appropr
  
 //separating axes theorem implementation for collision detection
 
-bool SATCollision(const std::vector<glm::vec2>& polygon1, const std::vector<glm::vec2>& polygon2) {
+bool SATCollision(const std::vector<std::pair<float,float>>& polygon1, const std::vector<std::pair<float,float>>& polygon2) {
     // Loop through all edges of both polygons
     for (size_t i = 0; i < polygon1.size(); ++i) {
         // Get the edge normal (perpendicular to the edge direction)
-        glm::vec2 edge = polygon1[(i + 1) % polygon1.size()] - polygon1[i];
-        glm::vec2 normal = {edge.y, -edge.x}; // Normalized normal
+        std::pair<float,float> edge = polygon1[(i + 1) % polygon1.size()];
+        edge.first -= polygon1[i].first;
+        edge.second -=polygon1[i].second;
+        std::pair<float,float> normal = {edge.second, -edge.first}; // Normalized normal
 
         // Project all vertices of both polygons onto the axis defined by the normal
-        double minProj1 = polygon1[0].x * normal.x + polygon1[0].y * normal.y;
+        double minProj1 = polygon1[0].first * normal.first + polygon1[0].second * normal.second;
         double maxProj1 = minProj1;
-        double minProj2 = polygon2[0].x * normal.x + polygon2[0].y * normal.y;
+        double minProj2 = polygon2[0].first * normal.first + polygon2[0].second * normal.second;
         double maxProj2 = minProj2;
         for (size_t j = 1; j < polygon1.size(); ++j) {
-        double projection = polygon1[j].x * normal.x + polygon1[j].y * normal.y;
+        double projection = polygon1[j].first * normal.first + polygon1[j].second * normal.second;
         minProj1 = std::min(minProj1, projection);
         maxProj1 = std::max(maxProj1, projection);
         }
         for (size_t j = 1; j < polygon2.size(); ++j) {
-        double projection = polygon2[j].x * normal.x + polygon2[j].y * normal.y;
+        double projection = polygon2[j].first * normal.first + polygon2[j].second * normal.second;
         minProj2 = std::min(minProj2, projection);
         maxProj2 = std::max(maxProj2, projection);
         }
@@ -316,10 +318,39 @@ bool SATCollision(const std::vector<glm::vec2>& polygon1, const std::vector<glm:
     return true;
     }
 
+bool onSegment(std::pair<float, float> p, std::pair<float, float> q, std::pair<float, float> r) { 
+    if (q.first <= std::max(p.first, r.first) && q.first >= std::min(p.first, r.first) && 
+        q.second <= std::max(p.second, r.second) && q.second >= std::min(p.second, r.second)) 
+       return true; 
+    return false; 
+} 
+
+int orientation(std::pair<float, float> p, std::pair<float, float> q, std::pair<float, float> r) { 
+    int val = (q.second - p.second) * (r.first - q.first) - 
+              (q.first - p.first) * (r.second - q.second); 
+    if (val == 0) return 0; 
+    return (val > 0)? 1: 2; 
+} 
+
+bool doLinesIntersect(std::pair<float, float> p1, std::pair<float, float> q1, std::pair<float, float> p2, std::pair<float, float> q2) { 
+    int o1 = orientation(p1, q1, p2); 
+    int o2 = orientation(p1, q1, q2); 
+    int o3 = orientation(p2, q2, p1); 
+    int o4 = orientation(p2, q2, q1); 
+    if (o1 != o2 && o3 != o4) 
+        return true; 
+    if (o1 == 0 && onSegment(p1, p2, q1)) return true; 
+    if (o2 == 0 && onSegment(p1, q2, q1)) return true; 
+    if (o3 == 0 && onSegment(p2, p1, q2)) return true; 
+    if (o4 == 0 && onSegment(p2, q1, q2)) return true; 
+    return false; 
+} 
+
+
 bool isPointOnLine(const glm::vec2& point, const glm::vec2& line1, const glm::vec2& line2) {
-    //check if point lies on line by summing distances
-    float dx1 = point1.x - line1.x;
-    float dy1 = point1.y - line1.y;
+    //check if point lies on line by summing distances, -epsilon<difference<epsilon not needed cuz grid uses int for now
+    float dx1 = line2.x - line1.x;
+    float dy1 = line2.y - line1.y;
     float dx2 = line2.x - line1.x;
     float dy2 = line2.y - line1.y;
     if (dx1 + dx2 == abs(line1.x - line2.x) && dy1 + dy2 == abs(line1.y - line2.y))
@@ -327,27 +358,51 @@ bool isPointOnLine(const glm::vec2& point, const glm::vec2& line1, const glm::ve
     return false;
 }
 
-bool isPointInsidePolygon(const Point& point, const glm::vec2 polygon) {
-  int numVertices = polygon.size();
-  bool isInside = false;
+//Ray casting algorithm to check if point lies inside a polygon
 
-  Point currentVertex = polygon[0];
-  Point nextVertex;
+bool isPointInsidePolygon(const std::pair<float, float>& point, const std::vector<std::pair<float, float>>& polygon) {
+  int num_vertices = polygon.size();
+  float x = point.first, y = point.second;
+  bool inside = false;
 
-  for (int i = 1; i <= numVertices; ++i) {
-    nextVertex = polygon[i % numVertices];
+  std::pair<float, float> p1 = polygon[0], p2;
 
-    if (point,y > std::min(currentVertex.y, nextVertex.y)) {
-      if (point.y <= std::max(currentVertex.y, nextVertex.y)) {
-        if (point.x <= std::max(currentVertex.x, nextVertex.x)) {
-          double xIntersection = (point.y - currentVertex.y) * (nextVertex.x - currentVertex.x) / (nextVertex.y - currentVertex.y) + currentVertex.x;
-          if (currentVertex.x == nextVertex.x || polygon.x <= xIntersection) {
-            isInside = !isInside;
-          } } } }
+  for (int i = 1; i <= num_vertices; i++) {
+    p2 = polygon[i % num_vertices];
 
-    currentVertex = nextVertex;
+    if (y > (p1.second > p2.second ? p2.second : p1.second) && 
+        y <= (p1.second < p2.second ? p2.second : p1.second)) {
+        if (x <= (p1.first > p2.first ? p1.first : p2.first)) {
+          float x_intersection = (y - p1.second) * (p2.first - p1.first) / (p2.second - p1.second) + p1.first;
+
+          if (p1.first == p2.first || x <= x_intersection) {
+            inside = !inside;
+          }
+        }
+      }
+    
+
+    p1 = p2;
   }
-  return isInside;
+
+  return inside;
+}
+
+bool DoesLineCrossLine(const Line2D& obj1, const Line2D& obj2){
+    //check if lines intersect by checking if endpoints lie on opposite sides of the other line
+    std::pair<float,float> p1 = {obj1.points[0][0], obj1.points[0][1]};
+    std::pair<float,float> q1 = {obj1.points[1][0], obj1.points[1][1]};
+    std::pair<float,float> p2 = {obj2.points[0][0], obj2.points[0][1]};
+    std::pair<float,float> q2 = {obj2.points[1][0], obj2.points[1][1]};
+
+    float o1 = orientation(p1, q1, p2);
+    float o2 = orientation(p1, q1, q2);
+    float o3 = orientation(p2, q2, p1);
+    float o4 = orientation(p2, q2, q1);
+
+    if (o1 != o2 && o3 != o4)
+        return true;
+    return false;
 }
 
 
@@ -363,26 +418,35 @@ bool collisionCheck(const Shape& obj1, const Shape& obj2) {
             return quad;}};*/
 
     //circles intersect if distance between centers is less than sum of radii
-    if (obj1.getShapeType() == 'Circle' && obj2.getShapeType() == 'Circle'){
+    if (obj1.getShapeType() == "Circle" && obj2.getShapeType() == "Circle"){
+        const Circle& obj1 = dynamic_cast<const Circle&>(obj1);
+        const Circle& obj2 = dynamic_cast<const Circle&>(obj2);
         float dist = sqrt(pow(obj1.position.x - obj2.position.x, 2) + pow(obj1.position.y - obj2.position.y, 2));
-        if dist>(obj1.radius + obj2.radius)
+        if (dist>(obj1.radius + obj2.radius))
             return false;
         return true;
     }
 
     //two points intersect if same position    
-    else if (obj1.getShapeType() == 'Point' && obj2.getShapeType() == 'Point'){
+    else if (obj1.getShapeType() == "Point" && obj2.getShapeType() == "Point"){
         if (obj1.position == obj2.position)
             return true;
         return false;
     }
 
-    //point lies on line if it satisfies section theorem with points
-    else if (obj1.getShapeType=='Point' && obj2.getShapeType()=='Line2D' ||
-         obj1.getShapeType()=='Line2D' && obj2.getShapeType()=='Point'){
+    //line line intersection based on orientation of points
+    else if (obj1.getShapeType()=="Line2D" && obj2.getShapeType()=="Line2D"){
+        const Line2D& obj1 = dynamic_cast<const Line2D&>(obj1);
+        const Line2D& obj2 = dynamic_cast<const Line2D&>(obj2);
+        return DoesLineCrossLine(obj1, obj2);
+    }
 
-        const Point& point = dynamic_cast<const Point&>(obj1 ? *obj1 : *obj2); 
-        const Line2D& line = dynamic_cast<const Line2D&>(obj1 ? *obj2 : *obj1); 
+    //point lies on line if it satisfies section theorem with points
+    else if (obj1.getShapeType()=="Point" && obj2.getShapeType()=="Line2D" ||
+         obj1.getShapeType()=="Line2D" && obj2.getShapeType()=="Point"){
+
+        const Point& point = obj1.getShapeType() == "Point" ? dynamic_cast<const Point&>(obj1) : dynamic_cast<const Point&>(obj2);
+        const Line2D& line = obj1.getShapeType() == "Point" ? dynamic_cast<const Line2D&>(obj2) : dynamic_cast<const Line2D&>(obj1);
 
         if (isPointOnLine(point.position, line.points[0], line.points[1]))
             return true;
@@ -390,23 +454,36 @@ bool collisionCheck(const Shape& obj1, const Shape& obj2) {
     }
 
     //point in polygon
-    else if (obj1.getShapeType()=='Point' && obj2.getShapeType()=='Quad' ||
-         obj1.getShapeType()=='Quad' && obj2.getShapeType()=='Point'|| 
-         obj1.getShapeType()=='Triangle' && obj2.getShapeType()=='Point' ||
-         obj1.getShapeType()=='Point' && obj2.getShapeType()=='Triangle')  {
+    else if ((obj1.getShapeType() == "Point" && (obj2.getShapeType() == "Quad" || obj2.getShapeType() == "Triangle")) ||
+            (obj2.getShapeType() == "Point" && (obj1.getShapeType() == "Quad" || obj1.getShapeType() == "Triangle"))) {
 
-        //check which one is not point
-        if (obj1.getShapeType()=='Point') {
-            return isPointInsidePolygon(obj1, obj2.vertices);}
+        const Point& point = dynamic_cast<const Point&>(obj1.getShapeType()=="Point" ? obj1 : obj2);
+
+        if (obj2.getShapeType()=="Quad") {
+            const Quad& polygon = dynamic_cast<const Quad&>(obj2);
+            return isPointInsidePolygon(point.vertices[0], polygon.vertices);
+        }
         else {
-            return isPointInsidePolygon(obj2, obj1.vertices);}
-    }   
+            const Triangle& polygon = dynamic_cast<const Triangle&>(obj2);
+            return isPointInsidePolygon(point.vertices[0], polygon.vertices);
+        }
+    }
 
     //line polygon
+    else if ((obj1.getShapeType() == "Line2D" && (obj2.getShapeType() == "Quad" || obj2.getShapeType() == "Triangle")) ||
+            (obj2.getShapeType() == "Line2D" && (obj1.getShapeType() == "Quad" || obj1.getShapeType() == "Triangle"))) {
+
+        const Line2D& line = dynamic_cast<const Line2D&>(obj1.getShapeType()=="Line2D" ? obj1 : obj2);
+        //little bit left here
+
+    }
+
     //similar to point polygon, needs some modification
 
     //polygon polygon
-    return SATCollision(obj1.vertices, obj2.vertices);
+    else {
+        return SATCollision(obj1.vertices, obj2.vertices);
+    }
 
     
     
