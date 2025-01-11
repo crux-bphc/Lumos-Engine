@@ -1,10 +1,28 @@
 #include "lumos.h"
 
-
 std::vector<std::thread> App::fixed_update_threads;
+
 int WINDOW_HEIGHT;
 int WINDOW_WIDTH;
 
+/**
+ * @brief Creates a window, handles debugging and errors
+ * 
+ * This function initializes GLFW, creates a GLFW window and makes the OpenGL context current.
+ * It also initializes GLEW and enables debug context if defined.
+ * 
+ * @note If the application is set to headless mode, no window will be created.
+ * 
+ * @note The window size is determined by the constants WINDOW_WIDTH, WINDOW_HEIGHT passed to constructor
+ *       The window_title is defined in the App class.
+ * 
+ * @note The resizable flag (determines if window can be resized) is defined in the App class.
+ * 
+ * @note If GLFW initialization or window creation fails, error messages are logged.
+ * 
+ * @note If GLEW initialization fails, the GLFW window is terminated.
+ * 
+ */
 void App::create_window() {
     if (this->headless) {
         spdlog::debug("Creating headless window");
@@ -16,12 +34,13 @@ void App::create_window() {
 
     // Initialize GLFW
     if (!glfwInit()) {
-        spdlog::error("Failed to initialize GLFW");
+        spdlog::zerror("Failed to initialize GLFW");
     }
 
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
+    // Turn on debugging if it is defined
     #ifdef DEBUG
 
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
@@ -78,6 +97,15 @@ void App::create_window() {
     //             glGetString(GL_VERSION), __cplusplus);
 }
 
+/**
+ * @brief Construct a new App:: App object
+ * 
+ * @param window_width Width of the window
+ * @param window_height Height of the window
+ * @param window_title Title of the window
+ * @param resizable Boolean value to determine if the window is resizable or not
+ * @param debug Boolean value to determine if debugging is being used or not
+ */
 App::App(int window_width, int window_height, const char* window_title,
          bool resizable, bool debug) {
     spdlog::info("Starting Lumos Engine 🌕");
@@ -96,7 +124,11 @@ App::App(int window_width, int window_height, const char* window_title,
     #endif
 }
 
-// Opens app in headless mode
+/**
+ * @brief Opens app in headless mode
+ * 
+ * @param debug Boolean value to determine if debugging is being used or not
+ */
 App::App(bool debug) {
     spdlog::info("Starting Lumos Engine 🌕");
     if (debug) {
@@ -107,36 +139,79 @@ App::App(bool debug) {
     this->create_window();
 }
 
+/**
+ * @brief Destructor for the App object
+ * 
+ */
 App::~App() { spdlog::info("Closing Lumos Engine 🌑"); }
 
+/**
+ * @brief Add function to the startup_functions vector to be called at the start of the application
+ * 
+ * @param function Startup function
+ * @return App& 
+ */
 App& App::add_startup_system(std::function<void(App&)> function) {
     this->startup_functions.push_back(function);
     return *this;
 }
 
+/**
+ * @brief Add function to the update_functions vector to be called every frame
+ * 
+ * @param function Update function
+ * @return App& 
+ */
 App& App::add_update_system(std::function<void(App&)> function) {
     this->update_functions.push_back(function);
     return *this;
 }
 
+/**
+ * @brief Add function to the fixed_update_functions vector to be called every fixed time interval
+ * 
+ * @param function Fixed update function
+ * @param milliseconds Time interval between each call in milliseconds (default is 1000)
+ * @return App& 
+ */
 App& App::add_fixed_update_system(std::function<void(App&)> function,
                                   int milliseconds) {
     this->fixed_update_functions.push_back({function, milliseconds});
     return *this;
 }
 
+
+/**
+ * @brief Adds callback system for keys
+ * 
+ * @param function Pass a function that takes (key, scancode, action, and mods) 
+ * @return App& 
+ */
 /*
+
 App& App::add_key_callback_system(
     std::function<void(int, int, int, int)> function) {
     this->key_callback_functions.push_back(function);
     return *this;
 }
 
+/**
+ * @brief Adds callback system for mouse
+ * 
+ * @param function Pass a function that takes (button, action)
+ * @return App& 
+ */
 App& App::add_mouse_callback_system(std::function<void(int, int)> function) {
     this->mouse_callback_functions.push_back(function);
     return *this;
 }
 
+/**
+ * @brief Adds callback system for scroll
+ * 
+ * @param function Pass a function that takes (xoffset, yoffset, and mods)
+ * @return App& 
+ */
 App& App::add_scroll_callback_system(
     std::function<void(int, int, int)> function) {
     this->scroll_callback_functions.push_back(function);
@@ -144,13 +219,21 @@ App& App::add_scroll_callback_system(
 }
 */
 
-
+/**
+ * @brief Closes the application
+ * 
+ */
 void App::close() {
     glfwSetWindowShouldClose(this->window, GLFW_TRUE);
     glfwTerminate();
     running = false;
 }
 
+/**
+ * @brief Gets the current mouse position
+ * 
+ * @return std::pair<double, double> 
+ */
 /*
 std::pair<double, double> App::get_mouse_position() {
     double xpos, ypos;
@@ -158,13 +241,27 @@ std::pair<double, double> App::get_mouse_position() {
     ypos = WINDOW_WIDTH - ypos;
     return {xpos, ypos};
 }
-
+/**
+ * @brief Checks if the mouse is being pressed
+ * 
+ * @return true 
+ * @return false 
+ */
 bool App::is_mouse_pressed() {
     spdlog::warn("is_mouse_pressed is not working as intended");
     return this->__is_mouse_pressed;
 }
 */
 
+/**
+ * @brief Runs the application.
+ * 
+ * This function is responsible for running the main loop of the application.
+ * It registers the key, mouse, and scroll callback functions, runs the startup functions,
+ * runs the fixed update functions in separate threads, and handles the main loop.
+ * 
+ * @note This function assumes that the window has already been created.
+ */
 void App::run() {
     //this->create_window();
 
@@ -345,6 +442,19 @@ void updateRectS2D(glm::vec2 pos, glm::vec2 dim, float angle, vertTexQuad& vertQ
 */
 
 
+/**
+ * @brief Callback function for OpenGL debug output.
+ * 
+ * It logs the debug message based on the message type.
+ * 
+ * @param source The source of the debug message.
+ * @param type The type of the debug message.
+ * @param id The ID of the debug message.
+ * @param severity The severity level of the debug message.
+ * @param length The length of the debug message.
+ * @param message The debug message.
+ * @param userParam User-defined parameter.
+ */
 void glDebugOutput(GLenum source, GLenum type, 
                     unsigned int id, GLenum severity, 
                     GLsizei length, const char *message, 

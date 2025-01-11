@@ -1,6 +1,11 @@
 #include "shader.h"
 
-// Reads a text file and outputs a string with everything in the text file
+/**
+ * @brief Reads a text file and outputs a string with everything in the text file
+ * 
+ * @param filename Name of the  file
+ * @param file Stores the contents of the file with name "filename"
+ */
 void get_file_contents(const char* filename, std::string& file)
 {
 	std::ifstream in(filename, std::ios::binary);
@@ -18,7 +23,12 @@ void get_file_contents(const char* filename, std::string& file)
     throw(errno);
 }
 
-// Constructor that build the Shader Program from 2 different shaders
+/**
+ * @brief Constructor that build the Shader Program from 2 different shaders
+ * 
+ * @param vertexFile File that stored the vertex information
+ * @param fragmentFile File that stores the fragment information
+ */
 Shader::Shader(const char* vertexFile, const char* fragmentFile)
 {
     //printf("getting files\n");
@@ -69,25 +79,42 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 
 }
 
+/**
+ * @brief Makes the program 'ref' the current program
+ * 
+ */
 void Shader::Activate()
 {
 	glUseProgram(ref);
 }
 
+/**
+ * @brief Deletes the specified program object
+ * 
+ */
 void Shader::Delete()
 {
 	glDeleteProgram(ref);
 }
 
-
+/**
+ * @brief Sets the value to the specified float type uniform variable
+ * 
+ * @param uniformRef The uniform variable of type float
+ * @param data The data to set to the uniform variable
+ */
 void Shader::setUniformFloat(GLuint uniformRef, GLfloat data) {
     glUseProgram(ref);
     glUniform1f(uniformRef, data);
 
 }
-
+/**
+ * @brief Sets the value to the specified integer type uniform variable
+ * 
+ * @param uniformRef The uniform variable of type integer
+ * @param texRef The data to set to the uniform variable
+ */
 void Shader::setUniformTexture(GLuint uniformRef, GLuint texRef) {
     glUseProgram(ref);
     glUniform1i(uniformRef, texRef); 
 }
-
